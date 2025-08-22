@@ -1,27 +1,30 @@
 # Build stage
 FROM node:20-alpine AS builder
-WORKDIR /app
 
-# Copy package files first for better caching - NOTE THE 'web/' PATH!
-COPY ./web/package.json ./web/package-lock.json* ./
+# SET THE WORKDIR TO /app/web FROM THE START
+WORKDIR /app/web
+
+# Copy package files first for better caching
+# Now we are already in /app/web, so we copy from the host's web/ to the current (./)
+COPY ./package.json ./package-lock.json* ./
 RUN npm ci
 
-# Copy source code and build - NOTE THE 'web/' PATH!
-COPY ./web/ ./
+# Copy the rest of the web app source code
+COPY . .
 RUN npm run build
 
 # Production stage
 FROM node:20-alpine AS production
-WORKDIR /app
+WORKDIR /app/web
 
-# Install production dependencies only - NOTE THE 'web/' PATH!
-COPY ./web/package.json ./web/package-lock.json* ./
+# Install production dependencies only
+COPY ./package.json ./package-lock.json* ./
 RUN npm ci --omit=dev
 
 # Copy built application from builder stage
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/web/.next ./.next
+COPY --from=builder /app/web/public ./public
+COPY --from=builder /app/web/node_modules ./node_modules
 
 # Expose port and set environment
 EXPOSE 3000

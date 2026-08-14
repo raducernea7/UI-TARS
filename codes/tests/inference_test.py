@@ -76,7 +76,7 @@ if __name__ == '__main__':
     model_output_height = 525
 
     # Open the image
-    img = Image.open('./data/coordinate_process_image.png')
+    img = Image.open('../data/coordinate_process_image.png')
     width, height = img.size
     print(f'Original coordinate: {width}, {height}')
 
@@ -96,4 +96,4 @@ if __name__ == '__main__':
     )  # Mark the point with a red dot
     plt.title('Visualize Coordinate')
     plt.axis('off')  # Set to 'off' to hide the axes
-    plt.savefig('./data/coordinate_process_image_som.png', dpi=350)
+    plt.savefig('../data/coordinate_process_image_som.png', dpi=350)
